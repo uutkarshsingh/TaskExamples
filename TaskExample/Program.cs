@@ -10,16 +10,11 @@ namespace TaskExample
     class Program
     {
         static void Main(string[] args)
-        {   
-            var t1 =  Task.Factory.StartNew(() => DoSomeVeryImportantWork(1,1500)).ContinueWith((prevTack)=>MoreImportantWork(1,1500));
+        {
+            var intList = new List<int>() { 1, 2, 323, 3, 4, 54, 1, 55, 7767, 345 };
 
-            var t2 =  Task.Factory.StartNew(() => DoSomeVeryImportantWork(2, 3000)).ContinueWith((prevTack)=>MoreImportantWork(2,3000));
-
-            var t3 =  Task.Factory.StartNew(() => DoSomeVeryImportantWork(3, 1000)).ContinueWith((prevTack)=>MoreImportantWork(3,1000));
-
-            var taskList = new List<Task>() {t1,t2,t3};
-
-            Task.WaitAll(taskList.ToArray());
+            //Blocking function that is mentioned below . You won't be able to go to the last comment before below class.
+            Parallel.ForEach(intList, (i) => Console.WriteLine(i));
 
             Console.WriteLine("WRITING THE END OF THE PROGRAM");
             Console.ReadKey();
