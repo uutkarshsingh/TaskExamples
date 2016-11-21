@@ -11,24 +11,27 @@ namespace TaskExample
     {
         static void Main(string[] args)
         {
-            var t1 = new Task(() => {
-                Console.WriteLine("Task1 is beginning");
-                for (int count = 0; count < 100; count++)
-                {
-                    Console.WriteLine("INSDE THREAD " + count);
-                }
-
-                    Console.WriteLine("task 1 has completed");
-            });
+            var t1 = new Task(() => DoSomeVeryImportantWork(1,1500));
 
             t1.Start();
+
             for (int count = 0; count < 100; count++)
             {
-                Console.WriteLine("Printing morev values  from" + count);
-               }
+                Console.WriteLine("Printing more values  from" + count);
+            }
 
-                Console.WriteLine("Press any key to continue");
+            Console.WriteLine("Press any key to continue");
             Console.ReadKey();
+        }
+
+        static void DoSomeVeryImportantWork(int id, int sleeptime)
+        {
+            Console.WriteLine("Task {0} is beginning ",id);
+            for (int count = 0; count < 100;count++ )
+            {
+                Console.WriteLine("From the function {0}",count);
+            }
+            Console.WriteLine("Task {0} has completed", id);
         }
     }
 }
