@@ -14,7 +14,7 @@ namespace TaskExample
             var intList = new List<int>() { 1, 2, 323, 3, 4, 54, 1, 55, 7767, 345 };
 
             //Blocking function that is mentioned below . You won't be able to go to the last comment before below class.
-            Parallel.ForEach(intList, (i) => Console.WriteLine(i));
+            Parallel.For(0, 100, (i) => Console.WriteLine(i));
 
             Console.WriteLine("WRITING THE END OF THE PROGRAM");
             Console.ReadKey();
