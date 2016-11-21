@@ -11,16 +11,27 @@ namespace TaskExample
     {
         static void Main(string[] args)
         {
-            var intList = new List<int>() { 1, 2, 323, 3, 4, 54, 1, 55, 7767, 345 };
+            var source = new CancellationTokenSource();
 
-            //Blocking function that is mentioned below . You won't be able to go to the last comment before below class.
-            Parallel.For(0, 100, (i) => Console.WriteLine(i));
+            try
+            {
+                var t1 = Task.Factory.StartNew(() => DoSomeVeryImportantWork(1, 1200,source.Token)).ContinueWith((prevTask) =>MoreImportantWork(1, 3000,source.Token));
 
+                Thread.Sleep(1500);
+                
+                source.Cancel();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.GetType());
+            }
+            
             Console.WriteLine("WRITING THE END OF THE PROGRAM");
+
             Console.ReadKey();
         }
          
-        static void DoSomeVeryImportantWork(int id, int sleeptime)
+        static void DoSomeVeryImportantWork(int id, int sleeptime,CancellationToken token)
         {
             Console.WriteLine("Task {0} PRIMARY beginning ",id);
             Thread.Sleep(sleeptime);
@@ -28,20 +39,41 @@ namespace TaskExample
             {
                 Console.WriteLine("PRIMARY WORK LOOP {0}",id);
                 Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
+                if (token.IsCancellationRequested)
+                {
+                    Console.WriteLine("Cancellation requested");
+
+                    token.ThrowIfCancellationRequested();
+                }
+
             }
             Console.WriteLine("Task {0} PRIMARY completed", id);
         }
 
-        static void MoreImportantWork(int id , int sleepTime)
+        static void MoreImportantWork(int id , int sleepTime,CancellationToken token)
         {
-            Console.WriteLine(" {0}  SECONDARY WORK STARTED ",id);
-            Thread.Sleep(sleepTime);
-            for(int count=0 ;  count <50 ; count++)
+            try
             {
-                Console.WriteLine("secondary work loop {0}", id);
-                Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
+                Console.WriteLine(" {0}  SECONDARY WORK STARTED ", id);
+                Thread.Sleep(sleepTime);
+                for (int count = 0; count < 50; count++)
+                {
+                    Console.WriteLine("secondary work loop {0}", id);
 
-            }           
+                    Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
+
+                    if (token.IsCancellationRequested)
+                    {
+                        Console.WriteLine("Cancellation requested");
+
+                        token.ThrowIfCancellationRequested();
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("EXception thrown by the application");
+            }
             Console.WriteLine("Task {0} SECONDARY completed",id);
         }
     }
